@@ -13,11 +13,13 @@ void showMenu(Menu *menu, int index);
 int createProduct(Menu *menu);
 int selectDataNo(Menu *menu, int count);
 void updateMenu(Menu *menu);
+void searchMenu(Menu *menu, int count);
+void searchPrice(Menu *menu, int count);
 int main(void)
 {
     Menu menu[100];
     int count = 0, index = 0;
-    int menuNum;
+    int menuNum,no;
     while(1){
         menuNum=selectMenu();
         if(menuNum==0) break;
@@ -30,7 +32,7 @@ int main(void)
                 printf("=> 추가됨!\n");
             break;
             case 3:
-                int no=selectDataNo(menu, count);
+                no=selectDataNo(menu, count);
                 if(no==0){
                     printf("=>취소됨!");
                     continue;
@@ -39,7 +41,7 @@ int main(void)
                 printf("=> 수정됨!\n");
             break;
             case 4:
-                int no=selectDataNo(menu, count);
+                no=selectDataNo(menu, count);
                 if(no==0){
                     printf("=>취소됨!");
                     continue;
@@ -53,10 +55,10 @@ int main(void)
                 printf("=> 삭제됨!\n");
             break;
             case 5:
-                printf("메뉴 검색\n");
+                searchMenu(menu, count);
             break;
             case 6:
-                printf("가격대 검색\n");
+                searchPrice(menu, count);
             break;
             case 7:
                 printf("종류별 검색\n");
@@ -139,4 +141,28 @@ int selectDataNo(Menu *menu, int count){
 }
 void updateMenu(Menu *menu){
     createProduct(menu);
+}
+void searchMenu(Menu *menu, int count){
+    getchar();
+    printf("검색할 메뉴 이름은? (부분만 입력 가능)");
+    char search[20];
+    scanf("%[^\n]s", search);
+    for(int i=0; i<count; i++){
+        if(strstr(menu[i].name, search)!=NULL&&menu[i].price!=-1){
+            printf("#%d ", i+1);
+            readProduct(&menu[i]);
+        }
+    }
+}
+void searchPrice(Menu *menu, int count){
+    getchar();
+    printf("검색할 가격대는? 두 숫자 입력 (최소, 최대) ");
+    int searchMin, searchMax;
+    scanf("%d %d", &searchMin, &searchMax);
+    for(int i=0; i<count; i++){
+        if(menu[i].price<=searchMax&&menu[i].price>=searchMin&&menu[i].price!=-1){
+            printf("#%d ", i+1);
+            readProduct(&menu[i]);
+        }
+    }
 }
