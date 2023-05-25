@@ -15,10 +15,17 @@ int selectDataNo(Menu *menu, int count);
 void updateMenu(Menu *menu);
 void searchMenu(Menu *menu, int count);
 void searchPrice(Menu *menu, int count);
+void typeSearch(Menu *menu, int count);
+void quantitySearch(Menu *menu, int count);
+void saveData(Menu *menu, int count);
+int loadData(Menu *menu);
+
 int main(void)
 {
     Menu menu[100];
-    int count = 0, index = 0;
+    int count, index = 0;
+    count = loadData(menu);
+    index = count;
     int menuNum,no;
     while(1){
         menuNum=selectMenu();
@@ -61,13 +68,13 @@ int main(void)
                 searchPrice(menu, count);
             break;
             case 7:
-                printf("종류별 검색\n");
+                typeSearch(menu, count);
             break;
             case 8:
-                printf("재고 검색\n");
+                quantitySearch(menu, count);
             break;
             case 9:
-                printf("저장\n");
+                saveData(menu, index);
             break;
         }
     }
@@ -165,4 +172,68 @@ void searchPrice(Menu *menu, int count){
             readProduct(&menu[i]);
         }
     }
+}
+void typeSearch(Menu *menu, int count){
+    getchar();
+    printf("검색할 종류는? (Hot=H / Ice=I / Both=B)");
+    char search;
+    scanf("%c", &search);
+    for(int i=0; i<count; i++){
+        if(menu[i].type==search&&menu[i].price!=-1){
+            printf("#%d ", i+1);
+            readProduct(&menu[i]);
+        }
+    }
+}
+void quantitySearch(Menu *menu, int count){
+    getchar();
+    printf("재고가 부족한 메뉴만 검색하시겠습니까? (Y/N)");
+    char search;
+    scanf("%c", &search);
+    if(search=='Y'){
+        for(int i=0; i<count; i++){
+            if(menu[i].quantity<=0&&menu[i].price!=-1){
+                printf("#%d ", i+1);
+                readProduct(&menu[i]);
+            }
+        }
+    }
+    else{
+        printf("재고의 최소값을 입력해주세요. ");
+        int searchMin;
+        scanf("%d", &searchMin);
+        for(int i=0; i<count; i++){
+            if(menu[i].quantity>=searchMin&&menu[i].price!=-1){
+                printf("#%d ", i+1);
+                readProduct(&menu[i]);
+            }
+        }
+    }
+}
+void saveData(Menu *menu, int count){
+    FILE *fp;
+    fp = fopen("menu.txt", "wt");
+    for(int i=0; i<count; i++){
+        if(menu[i].price==-1) continue;
+        fprintf(fp, "%s: %d %c %d\n", menu[i].name, menu[i].price, menu[i].type, menu[i].quantity);
+    }
+    fclose(fp);
+    printf("저장됨!\n");
+}
+int loadData(Menu *menu){
+    int count = 0;
+    FILE *fp;
+    fp = fopen("menu.txt", "rt");
+    if(fp==NULL){
+        printf("=> 파일 없음\n");
+        return 0;
+    }
+    while(!feof(fp)){
+        fscanf(fp, "%[^:]: %d %c %d\n", menu[count].name, &menu[count].price, &menu[count].type, &menu[count].quantity);
+        count++;
+    }
+    fclose(fp);
+    printf("=> 로딩 성공!\n");
+    showMenu(menu, count);
+    return count;
 }
