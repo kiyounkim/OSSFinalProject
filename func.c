@@ -70,7 +70,6 @@ int selectDataNo(Menu *menu, int count){
     showMenu(menu,count);
     printf("번호는 (취소:0)?");
     scanf("%d",&no);
-    getchar();
     return no;
 }
 void updateMenu(Menu *menu){
@@ -119,7 +118,7 @@ void quantitySearch(Menu *menu, int count){
     scanf("%c", &search);
     if(search=='Y'){
         for(int i=0; i<count; i++){
-            if(menu[i].quantity<=0&&menu[i].price!=-1){
+            if(menu[i].quantity==0&&menu[i].price!=-1){
                 printf("#%d ", i+1);
                 readProduct(&menu[i]);
             }
